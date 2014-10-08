@@ -27,7 +27,7 @@ Installation
 2. Open the **functions.php** file in your WordPress theme `/wp-content/theme-name/functions.php` and add the following code:
 
 ```php
-// Load the WordPress Boostrap library
+// Load the WP Boostrap library
 require_once('wp-bootstrap.php');
 ```
 
