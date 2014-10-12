@@ -25,286 +25,325 @@
 
 // NAV
 // add bootstrap markup to menus via a custom walker (wp_bootstrap_navwalker)
-function wpbs_nav_menu_args_filter($args)
+if(!function_exists('wpbs_nav_menu_args_filter'))
 {
-	if(empty($args['walker']))
+	function wpbs_nav_menu_args_filter($args)
 	{
-		$args['fallback_cb'] = 'wp_bootstrap_navwalker::fallback';
-		$args['walker'] = new wp_bootstrap_navwalker();
+		if(empty($args['walker']))
+		{
+			$args['fallback_cb'] = 'wp_bootstrap_navwalker::fallback';
+			$args['walker'] = new wp_bootstrap_navwalker();
+		}
+
+		return $args;
 	}
-	
-	return $args;
 }
 add_filter('wp_nav_menu_args', 'wpbs_nav_menu_args_filter');
 
 
 // CONTENT
 // add bootstrap alignment classes to images
-function wpbs_content_image_alignmment_filter($content)
+if(!function_exists('wpbs_content_image_alignmment_filter'))
 {
-	$search = array('alignleft', 'alignright', 'aligncenter');
-	$replace = array('alignleft pull-left', 'alignright pull-right', 'aligncenter center-block');
-	return $content = str_replace($search, $replace, $content);
+	function wpbs_content_image_alignmment_filter($content)
+	{
+		$search = array('alignleft', 'alignright', 'aligncenter');
+		$replace = array('alignleft pull-left', 'alignright pull-right', 'aligncenter center-block');
+		return $content = str_replace($search, $replace, $content);
+	}
 }
 add_filter('the_content', 'wpbs_content_image_alignmment_filter', 11);
 
 // add bootstrap markup to content elements
-function wpbs_content_responsive_image_filter($content)
-{	
-	$search = array('<img class="');
-	$replace = array('<img class="img-responsive ');
-	return $content = str_replace($search, $replace, $content);
+if(!function_exists('wpbs_content_responsive_image_filter'))
+{
+	function wpbs_content_responsive_image_filter($content)
+	{	
+		$search = array('<img class="');
+		$replace = array('<img class="img-responsive ');
+		return $content = str_replace($search, $replace, $content);
+	}
 }
 add_filter('the_content', 'wpbs_content_responsive_image_filter', 11);
 
 // add bootstrap markup to content elements
-function wpbs_content_table_classes_filter($content)
+if(!function_exists('wpbs_content_table_classes_filter'))
 {
-	$search = array('<table>');
-	$replace = array('<table class="table table-striped table-responsive">');
-	return $content = str_replace($search, $replace, $content);
+	function wpbs_content_table_classes_filter($content)
+	{
+		$search = array('<table>');
+		$replace = array('<table class="table table-striped table-responsive">');
+		return $content = str_replace($search, $replace, $content);
+	}
 }
 add_filter('the_content', 'wpbs_content_table_classes_filter', 11);
 
 // add bootstrap markup to the image caption shortcode
-function wpbs_img_caption_shortcode_filter($value, $attr, $content)
+if(!function_exists('wpbs_img_caption_shortcode_filter'))
 {
-	// see 'wp-includes/media.php' in WP core to learn more about the 'img_caption_shortcode' filter hook
-	$atts = shortcode_atts( array(
-		'id'	  => '',
-		'align'	  => 'alignnone',
-		'width'	  => '',
-		'caption' => ''
-	), $attr, 'caption' );
+	function wpbs_img_caption_shortcode_filter($value, $attr, $content)
+	{
+		// see 'wp-includes/media.php' in WP core to learn more about the 'img_caption_shortcode' filter hook
+		$atts = shortcode_atts( array(
+			'id'	  => '',
+			'align'	  => 'alignnone',
+			'width'	  => '',
+			'caption' => ''
+		), $attr, 'caption' );
 
-	$atts['width'] = (int) $atts['width'];
-	if ( $atts['width'] < 1 || empty( $atts['caption'] ) )
-		return $content;
+		$atts['width'] = (int) $atts['width'];
+		if ( $atts['width'] < 1 || empty( $atts['caption'] ) )
+			return $content;
 
-	if ( ! empty( $atts['id'] ) )
-		$atts['id'] = 'id="' . esc_attr( $atts['id'] ) . '" ';
+		if ( ! empty( $atts['id'] ) )
+			$atts['id'] = 'id="' . esc_attr( $atts['id'] ) . '" ';
 
-	$caption_width = 6 + $atts['width'];
+		$caption_width = 6 + $atts['width'];
 
-	// see 'wp-includes/media.php' in WP core to learn more about the 'img_caption_shortcode_width' filter hook
-	$caption_width = apply_filters( 'img_caption_shortcode_width', $caption_width, $atts, $content );
+		// see 'wp-includes/media.php' in WP core to learn more about the 'img_caption_shortcode_width' filter hook
+		$caption_width = apply_filters( 'img_caption_shortcode_width', $caption_width, $atts, $content );
 
-	$style = '';
-	if ( $caption_width )
-		$style = 'style="width: ' . (int) $caption_width . 'px" ';
-	
-	$html = '<div ' . $atts['id'] . $style . 'class="wp-caption img-responsive thumbnail ' . esc_attr( $atts['align'] ) . '">';
-	$html.= do_shortcode($content);
-	$html.= '<div class="wp-caption-text caption">' . $atts['caption'] . '</div>';
-	$html.= '</div>';
-	
-	return $html;
+		$style = '';
+		if ( $caption_width )
+			$style = 'style="width: ' . (int) $caption_width . 'px" ';
+
+		$html = '<div ' . $atts['id'] . $style . 'class="wp-caption img-responsive thumbnail ' . esc_attr( $atts['align'] ) . '">';
+		$html.= do_shortcode($content);
+		$html.= '<div class="wp-caption-text caption">' . $atts['caption'] . '</div>';
+		$html.= '</div>';
+
+		return $html;
+	}
 }
 add_filter('img_caption_shortcode', 'wpbs_img_caption_shortcode_filter', 10, 3);
 
 
 // COMMENTS
 // add bootstrap classes to avatars
-function wpbs_get_avatar_filter($avatar, $id_or_email, $size, $default, $alt)
+if(!function_exists('wpbs_get_avatar_filter'))
 {
-	// add the media-object class to the avatar
-	$search = array("class='");
-	$replace = array("class='media-object img-circle ");
-	return $avatar = str_replace($search, $replace, $avatar);
+	function wpbs_get_avatar_filter($avatar, $id_or_email, $size, $default, $alt)
+	{
+		// add the media-object class to the avatar
+		$search = array("class='");
+		$replace = array("class='media-object img-circle ");
+		return $avatar = str_replace($search, $replace, $avatar);
+	}
 }
 add_filter('get_avatar', 'wpbs_get_avatar_filter', 10, 5);
 
 // add a custom callback to "wp_list_comments" args to enable Bootstrap style comments
-function wpbs_list_comments_args_fitler($r)
+if(!function_exists('wpbs_list_comments_args_fitler'))
 {
-	if(empty($r['callback']))
+	function wpbs_list_comments_args_fitler($r)
 	{
-		$r['callback'] = 'wpbs_comment_callback';
-		$r['style'] = 'ol';
+		if(empty($r['callback']))
+		{
+			$r['callback'] = 'wpbs_comment_callback';
+			$r['style'] = 'ol';
+		}
+
+		return $r;
 	}
-	
-	return $r;
 }
 add_filter('wp_list_comments_args', 'wpbs_list_comments_args_fitler');
 
 // render Bootstrap style comments via custom callback
-function wpbs_comment_callback($comment, $args, $depth)
+if(!function_exists('wpbs_comment_callback'))
 {
-	?>
-	
-	<li id="comment-<?php comment_ID(); ?>" <?php comment_class(array(empty($args['has_children']) ? '' : 'parent', 'media comment')); ?>>
-		
-		<?php if($args['avatar_size'] != 0): ?>
-			<div class="comment-avatar pull-left">
-				<?php echo get_avatar($comment, $args['avatar_size']); ?>
-			</div>
-		<?php endif; ?>
-		
-		<ul class="comment-meta commentmetadata list-unstyled list-inline">
-			<li class="comment-author">
-				<h4 class="comment-heading media-heading">
-					<?php printf( __( '<cite class="fn">%s</cite> <span class="says"></span>' ), get_comment_author_link() ); ?>
-				</h4>
-			</li>
-			<li class="comment-time text-muted pull-right">
-				<small>
-					<span class="glyphicon glyphicon-time"></span>
-					<a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" title="Permalink">
-						<?php printf( __('%1$s &bull; %2$s'), get_comment_date(),  get_comment_time() ); ?>
-					</a>
-				</small>
-			</li>
-		</ul>
-		
-		<div id="div-comment-<?php comment_ID(); ?>" class="comment-body media-body well well-sm">
-			<?php comment_text(); ?>
-		</div>
-		
-		<div id="div-comment-<?php comment_ID(); ?>-functions" class="comment-functions">
-			<ul class="list-unstyled list-inline text-right">
-				
-				<?php if($comment->comment_approved == '0'): ?>
-					<li class="comment-awaiting-moderation text-info">
-						<small class="glyphicon glyphicon-info-sign"></small>
-						<?php _e( 'Your comment is awaiting moderation.' ); ?>
-					</li>
-				<?php endif; ?>
-				
-				<li class="comment-edit"><?php edit_comment_link(__( 'Edit' )); ?></li>
-			
-				<li class="comment-reply"><?php comment_reply_link( array_merge( $args, array( 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?></li>
+	function wpbs_comment_callback($comment, $args, $depth)
+	{
+		?>
+
+		<li id="comment-<?php comment_ID(); ?>" <?php comment_class(array(empty($args['has_children']) ? '' : 'parent', 'media comment')); ?>>
+
+			<?php if($args['avatar_size'] != 0): ?>
+				<div class="comment-avatar pull-left">
+					<?php echo get_avatar($comment, $args['avatar_size']); ?>
+				</div>
+			<?php endif; ?>
+
+			<ul class="comment-meta commentmetadata list-unstyled list-inline">
+				<li class="comment-author">
+					<h4 class="comment-heading media-heading">
+						<?php printf( __( '<cite class="fn">%s</cite> <span class="says"></span>' ), get_comment_author_link() ); ?>
+					</h4>
+				</li>
+				<li class="comment-time text-muted pull-right">
+					<small>
+						<span class="glyphicon glyphicon-time"></span>
+						<a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" title="Permalink">
+							<?php printf( __('%1$s &bull; %2$s'), get_comment_date(),  get_comment_time() ); ?>
+						</a>
+					</small>
+				</li>
 			</ul>
-		</div>
-	
-	<?php
-	// the closing tag is handled by WordPress via the end_callback method
+
+			<div id="div-comment-<?php comment_ID(); ?>" class="comment-body media-body well well-sm">
+				<?php comment_text(); ?>
+			</div>
+
+			<div id="div-comment-<?php comment_ID(); ?>-functions" class="comment-functions">
+				<ul class="list-unstyled list-inline text-right">
+
+					<?php if($comment->comment_approved == '0'): ?>
+						<li class="comment-awaiting-moderation text-info">
+							<small class="glyphicon glyphicon-info-sign"></small>
+							<?php _e( 'Your comment is awaiting moderation.' ); ?>
+						</li>
+					<?php endif; ?>
+
+					<li class="comment-edit"><?php edit_comment_link(__( 'Edit' )); ?></li>
+
+					<li class="comment-reply"><?php comment_reply_link( array_merge( $args, array( 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?></li>
+				</ul>
+			</div>
+
+		<?php
+		// the closing tag is handled by WordPress via the end_callback method
+	}
 }
 
 // add bootstrap classes to the comment reply link
-function wpbs_comment_reply_link_filter($link, $args, $comment, $post)
+if(!function_exists('wpbs_comment_reply_link_filter'))
 {
-	// give the reply link bootstrap button formatting
-	$search = array('comment-reply-');
-	$replace = array('btn btn-default btn-xs comment-reply-');
-	return $link = str_replace($search, $replace, $link);
+	function wpbs_comment_reply_link_filter($link, $args, $comment, $post)
+	{
+		// give the reply link bootstrap button formatting
+		$search = array('comment-reply-');
+		$replace = array('btn btn-default btn-xs comment-reply-');
+		return $link = str_replace($search, $replace, $link);
+	}
 }
 add_filter('comment_reply_link', 'wpbs_comment_reply_link_filter', 10, 4);
 
 // add bootstrap classes to the comment reply link
-function wpbs_edit_comment_link_filter($link, $comment_ID, $text)
+if(!function_exists('wpbs_edit_comment_link_filter'))
 {
-	// give the reply link bootstrap button formatting
-	$search = array('comment-edit-');
-	$replace = array('btn btn-default btn-xs comment-edit-');
-	return $link = str_replace($search, $replace, $link);
+	function wpbs_edit_comment_link_filter($link, $comment_ID, $text)
+	{
+		// give the reply link bootstrap button formatting
+		$search = array('comment-edit-');
+		$replace = array('btn btn-default btn-xs comment-edit-');
+		return $link = str_replace($search, $replace, $link);
+	}
 }
 add_filter('edit_comment_link', 'wpbs_edit_comment_link_filter', 10, 3);
 
 // add bootstrap markup to the comment form
-function wpbs_comment_form_defaults_filter($defaults)
+if(!function_exists('wpbs_comment_form_defaults_filter'))
 {
-	// force html5 format
-	$defaults['format'] = 'html5';
-	
-	// pull the 'require_name_email' option for later use
-	$required = get_option('require_name_email');
-	
-	// boostrap markup to denote required fields
-	$aria_required = ( $required ? " aria-required='true'" : '' );
-	$required_markup = '<sup class="required glyphicon glyphicon-asterisk text-danger"></sup>';
-	$required_text = sprintf( ' ' . __('Required fields are marked %s'), $required_markup );
-	
-	// bootstrap style required text
-	$defaults['comment_notes_before'] = '<p class="comment-notes">' . __('Your email address will not be published.') . ($required ? $required_text : '') . '</p>';
-	
-	// bootstrap markup for the author label and input
-	$author = '
-		<div class="comment-form-author form-group">
-			<label for="author" class="control-label col-sm-2">' . __('Name') . ' ' . ($required ? $required_markup : '') . '</label>
-			<div class="col-sm-10">
-				<input type="text" id="author" name="author" class="form-control" placeholder="John Smith" ' . $aria_required . ' />
+	function wpbs_comment_form_defaults_filter($defaults)
+	{
+		// force html5 format
+		$defaults['format'] = 'html5';
+
+		// pull the 'require_name_email' option for later use
+		$required = get_option('require_name_email');
+
+		// boostrap markup to denote required fields
+		$aria_required = ( $required ? " aria-required='true'" : '' );
+		$required_markup = '<sup class="required glyphicon glyphicon-asterisk text-danger"></sup>';
+		$required_text = sprintf( ' ' . __('Required fields are marked %s'), $required_markup );
+
+		// bootstrap style required text
+		$defaults['comment_notes_before'] = '<p class="comment-notes">' . __('Your email address will not be published.') . ($required ? $required_text : '') . '</p>';
+
+		// bootstrap markup for the author label and input
+		$author = '
+			<div class="comment-form-author form-group">
+				<label for="author" class="control-label col-sm-2">' . __('Name') . ' ' . ($required ? $required_markup : '') . '</label>
+				<div class="col-sm-10">
+					<input type="text" id="author" name="author" class="form-control" placeholder="John Smith" ' . $aria_required . ' />
+				</div>
 			</div>
-		</div>
-	';
-	
-	// bootstrap markup for the email label and input
-	$email = '
-		<div class="comment-form-email form-group">
-			<label for="email" class="control-label col-sm-2">' . __('Email') . ' ' . ($required ? $required_markup : '') . '</label>
-			<div class="col-sm-10">
-				<input type="email" id="email" name="email" class="form-control" placeholder="example@domain.com" ' . $aria_required . ' />
+		';
+
+		// bootstrap markup for the email label and input
+		$email = '
+			<div class="comment-form-email form-group">
+				<label for="email" class="control-label col-sm-2">' . __('Email') . ' ' . ($required ? $required_markup : '') . '</label>
+				<div class="col-sm-10">
+					<input type="email" id="email" name="email" class="form-control" placeholder="example@domain.com" ' . $aria_required . ' />
+				</div>
 			</div>
-		</div>
-	';
-	
-	// bootstrap markup for the url label and input
-	$url = '
-		<div class="comment-form-url form-group">
-			<label for="url" class="control-label col-sm-2">Website</label>
-			<div class="col-sm-10">
-				<input type="url" id="url" name="url" class="form-control" placeholder="http://www.example.com" />
+		';
+
+		// bootstrap markup for the url label and input
+		$url = '
+			<div class="comment-form-url form-group">
+				<label for="url" class="control-label col-sm-2">Website</label>
+				<div class="col-sm-10">
+					<input type="url" id="url" name="url" class="form-control" placeholder="http://www.example.com" />
+				</div>
 			</div>
-		</div>
-	';
-	
-	// bootstrap markup for the comment label and textarea
-	$comment = '
-		<div class="comment-form-comment form-group">
-			<label for="comment" class="control-label col-sm-2">Comment</label>
-			<div class="col-sm-10">
-				<textarea id="comment" name="comment" class="form-control" rows="5" aria-required="true"></textarea>
+		';
+
+		// bootstrap markup for the comment label and textarea
+		$comment = '
+			<div class="comment-form-comment form-group">
+				<label for="comment" class="control-label col-sm-2">Comment</label>
+				<div class="col-sm-10">
+					<textarea id="comment" name="comment" class="form-control" rows="5" aria-required="true"></textarea>
+				</div>
 			</div>
-		</div>
-	';
-	
-	// bootstrap markup for the allowed tags notes
-	$notes = '
-		<div class="comment-form-comment form-group">
-			<div class="col-sm-offset-2 col-sm-10">
-				<p class="form-allowed-tags">' . sprintf(__('You may use these <abbr title="HyperText Markup Language">HTML</abbr> tags and attributes: %s'), wpbs_allowed_tags()) . '</p>
+		';
+
+		// bootstrap markup for the allowed tags notes
+		$notes = '
+			<div class="comment-form-comment form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<p class="form-allowed-tags">' . sprintf(__('You may use these <abbr title="HyperText Markup Language">HTML</abbr> tags and attributes: %s'), wpbs_allowed_tags()) . '</p>
+				</div>
 			</div>
-		</div>
-	';
-	
-	// overwrite the default markup for the comment form fields and notes
-	$defaults['fields']['author'] = $author;
-	$defaults['fields']['email'] = $email;
-	$defaults['fields']['url'] = $url;
-	$defaults['comment_field'] = $comment;
-	$defaults['comment_notes_after'] = $notes;
-	
-	return $defaults;
+		';
+
+		// overwrite the default markup for the comment form fields and notes
+		$defaults['fields']['author'] = $author;
+		$defaults['fields']['email'] = $email;
+		$defaults['fields']['url'] = $url;
+		$defaults['comment_field'] = $comment;
+		$defaults['comment_notes_after'] = $notes;
+
+		return $defaults;
+	}
 }
 add_filter('comment_form_defaults', 'wpbs_comment_form_defaults_filter');
 
 // modify the 'allowedtags' function to output bootstrap friendly markup
-function wpbs_allowed_tags() {
-	global $allowedtags;
-	$allowed = '';
-	foreach ( (array) $allowedtags as $tag => $attributes ) {
-		$allowed .= '<code>&lt;'.$tag;
-		if ( 0 < count($attributes) ) {
-			foreach ( $attributes as $attribute => $limits ) {
-				$allowed .= ' '.$attribute.'=""';
+if(!function_exists('wpbs_allowed_tags'))
+{
+	function wpbs_allowed_tags() {
+		global $allowedtags;
+		$allowed = '';
+		foreach ( (array) $allowedtags as $tag => $attributes ) {
+			$allowed .= '<code>&lt;'.$tag;
+			if ( 0 < count($attributes) ) {
+				foreach ( $attributes as $attribute => $limits ) {
+					$allowed .= ' '.$attribute.'=""';
+				}
 			}
+			$allowed .= '&gt;</code> ';
 		}
-		$allowed .= '&gt;</code> ';
+
+		return $allowed;
 	}
-	
-	return $allowed;
 }
 
 // use jQuery to add bootstrap classes to the comment form on the 'comment_form_after' action
-function wpbs_comment_form_after_action()
+if(!function_exists('wpbs_comment_form_after_action'))
 {
-	?>
-	
-	<script type="text/javascript" charset="utf-8">
-		jQuery('.comment-form').addClass('form-horizontal clearfix');
-		jQuery('.form-submit input').addClass('btn btn-primary pull-right')
-	</script>
-	
-	<?php
+	function wpbs_comment_form_after_action()
+	{
+		?>
+
+		<script type="text/javascript" charset="utf-8">
+			jQuery('.comment-form').addClass('form-horizontal clearfix');
+			jQuery('.form-submit input').addClass('btn btn-primary pull-right')
+		</script>
+
+		<?php
+	}
 }
 add_action( 'comment_form_after', 'wpbs_comment_form_after_action');
 
